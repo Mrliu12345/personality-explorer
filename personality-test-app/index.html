@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人格探索 · 人格测试</title>
+<style>
+/* ===== 人格探索 · 全局样式 ===== */
+:root{
+  --bg:#f6f4ef;
+  --card:#ffffff;
+  --ink:#33302b;
+  --muted:#8a857d;
+  --primary:#5f8f7a;
+  --primary-deep:#4a7462;
+  --primary-soft:#e7efe9;
+  --accent:#b07d62;
+  --accent-soft:#f3e9e1;
+  --line:#e4e0d8;
+  --danger:#c25e5e;
+  --danger-soft:#f9ecec;
+  --warn:#9a6700;
+  --warn-soft:#fff7e8;
+  --radius:14px;
+  --shadow:0 2px 10px rgba(60,55,45,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+#app{max-width:640px;margin:0 auto;padding:16px;min-height:100vh}
+@media (min-width:860px){#app{padding:28px 16px}}
+
+/* ===== 通用组件 ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.card-title{font-size:18px;font-weight:700;margin:0 0 6px}
+.card-sub{font-size:14px;color:var(--muted);margin:0 0 14px}
+.hidden{display:none!important}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid transparent;border-radius:10px;
+  padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;
+  font-family:inherit;background:var(--primary-soft);color:var(--primary-deep);
+  transition:filter .15s,transform .05s;
+}
+.btn:hover{filter:brightness(.96)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn-danger{background:var(--danger-soft);color:var(--danger)}
+.btn-block{width:100%}
+.btn-lg{padding:14px 22px;font-size:16px}
+
+.tag{display:inline-block;font-size:12px;font-weight:600;border-radius:20px;padding:3px 10px;background:#f0ede6;color:var(--muted)}
+.tag-done{background:var(--primary-soft);color:var(--primary-deep)}
+.tag-new{background:var(--accent-soft);color:var(--accent)}
+.tag-warn{background:var(--warn-soft);color:var(--warn)}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.topbar .title{font-size:20px;font-weight:800;letter-spacing:.5px}
+.topbar .sub{font-size:13px;color:var(--muted)}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+
+.empty{text-align:center;padding:36px 16px;color:var(--muted)}
+.empty .emoji-big{font-size:44px;display:block;margin-bottom:10px}
+
+/* 档案列表 */
+.profile-card{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.profile-card .avatar{width:44px;height:44px;border-radius:50%;background:var(--primary-soft);color:var(--primary-deep);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex:none}
+.profile-card .info{flex:1;min-width:0}
+.profile-card .name{font-weight:700;font-size:16px}
+.profile-card .meta{font-size:13px;color:var(--muted)}
+
+/* 量表卡片 */
+.scale-card .scale-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.scale-card h3{margin:0;font-size:17px}
+.scale-card .scale-intro{font-size:14px;color:var(--muted);margin:6px 0 12px}
+.scale-card .scale-meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+.scale-card .scale-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* 进度条 */
+.progress{height:8px;background:#eeeae1;border-radius:6px;overflow:hidden;margin:10px 0}
+.progress > span{display:block;height:100%;background:var(--primary);border-radius:6px;transition:width .25s}
+
+/* 答题 */
+.quiz-wrap{max-width:560px;margin:0 auto}
+.quiz-progress-text{font-size:13px;color:var(--muted);text-align:center}
+.quiz-question{font-size:19px;font-weight:700;line-height:1.5;margin:22px 0 8px;min-height:2.4em}
+.quiz-dim-label{font-size:13px;color:var(--muted);margin-bottom:14px}
+.option{
+  display:block;width:100%;text-align:left;
+  border:1.5px solid var(--line);border-radius:12px;background:#fff;
+  padding:13px 16px;margin:10px 0;font-size:15px;cursor:pointer;font-family:inherit;color:var(--ink);
+  transition:border-color .12s,background .12s;
+}
+.option:hover{border-color:var(--primary)}
+.option.selected{border-color:var(--primary);background:var(--primary-soft);font-weight:600}
+.quiz-nav{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
+
+/* 报告 */
+.report-head{text-align:center;padding:8px 0 4px}
+.report-head h2{margin:0;font-size:22px}
+.report-head .meta{font-size:13px;color:var(--muted);margin-top:4px}
+.radar-wrap{display:flex;justify-content:center;padding:8px 0}
+.radar-wrap canvas{max-width:100%;height:auto}
+.dim-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.dim-card .dim-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dim-card .dim-name{font-weight:700;font-size:16px}
+.dim-card .dim-score{font-size:15px;font-weight:700;color:var(--primary-deep)}
+.dim-bar{height:8px;background:#eeeae1;border-radius:6px;overflow:hidden;margin:8px 0}
+.dim-bar > span{display:block;height:100%;background:var(--primary);border-radius:6px}
+.dim-desc{font-size:14px;color:var(--ink);margin:8px 0 0}
+.advice-list{margin:6px 0 0;padding-left:20px}
+.advice-list li{margin:6px 0;font-size:14px}
+.summary-box{background:var(--primary-soft);border-radius:12px;padding:16px;font-size:15px}
+
+/* 历史与对比 */
+.history-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.history-item .meta{font-size:13px;color:var(--muted)}
+.compare-badge{font-size:13px;font-weight:700;color:var(--primary-deep);background:var(--primary-soft);border-radius:8px;padding:2px 10px}
+.delta-up{color:#2e7d4f;font-weight:700}
+.delta-down{color:var(--danger);font-weight:700}
+.delta-flat{color:var(--muted)}
+
+/* 弹窗 */
+.modal-mask{position:fixed;inset:0;background:rgba(40,35,28,.4);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal{background:#fff;border-radius:16px;max-width:400px;width:100%;padding:22px;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.modal h3{margin:0 0 8px;font-size:18px}
+.modal p{margin:0 0 18px;font-size:14px;color:var(--muted)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:#33302b;color:#fff;font-size:14px;border-radius:10px;padding:10px 18px;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toast-in .2s ease}
+@keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 表单 */
+.text-input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+.text-input:focus{outline:none;border-color:var(--primary)}
+.form-label{display:block;font-size:14px;font-weight:600;margin:0 0 6px}
+.field{margin-bottom:14px}
+
+/* 隐私提示条 */
+.privacy-note{font-size:13px;color:var(--muted);text-align:center;padding:6px 0 0}
+
+/* 测试报告区 */
+#test-report{max-width:640px;margin:16px auto;font-size:14px}
+#test-report .t-pass{color:#2e7d4f;font-weight:700}
+#test-report .t-fail{color:var(--danger);font-weight:700}
+#test-report pre{white-space:pre-wrap;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13px}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function (global) {
+  'use strict';
+  global.AppData = global.AppData || {};
+  global.AppData.bigFive = {
+    id: 'bigFive',
+    name: '大五人格',
+    intro: '大五人格是心理学界公认度最高的特质模型，从开放性、尽责性、外向性、宜人性、情绪稳定性五个维度描绘你的性格轮廓。适合用于自我认知与个人发展定位。',
+    minutes: 8,
+    scaleType: 'multi', // multi=雷达图多维度，single=单维总分
+    dimensions: [
+      { id: 'extraversion', name: '外向性' },
+      { id: 'agreeableness', name: '宜人性' },
+      { id: 'conscientiousness', name: '尽责性' },
+      { id: 'neuroticism', name: '情绪稳定性' },
+      { id: 'openness', name: '开放性' }
+    ],
+    // d=维度 id，r=true 表示反向计分（5 点量表中选 5 记 1 分）
+    items: [
+      { d: 'extraversion', text: '我是聚会的灵魂人物', r: false },
+      { d: 'extraversion', text: '我不太爱说话', r: true },
+      { d: 'extraversion', text: '我在人群中感到自在', r: false },
+      { d: 'extraversion', text: '我更喜欢独处', r: true },
+      { d: 'extraversion', text: '我很容易结交新朋友', r: false },
+      { d: 'extraversion', text: '在社交场合我会退缩', r: true },
+      { d: 'extraversion', text: '我喜欢成为众人关注的焦点', r: false },
+      { d: 'extraversion', text: '我很少主动和别人搭话', r: true },
+      { d: 'extraversion', text: '我精力充沛、充满活力', r: false },
+      { d: 'extraversion', text: '我觉得自己比较安静沉默', r: true },
+
+      { d: 'agreeableness', text: '我会关心别人的感受', r: false },
+      { d: 'agreeableness', text: '我对别人的事不太上心', r: true },
+      { d: 'agreeableness', text: '我愿意花时间帮助别人', r: false },
+      { d: 'agreeableness', text: '我对他人的不幸不太在意', r: true },
+      { d: 'agreeableness', text: '我能体会到别人的心情', r: false },
+      { d: 'agreeableness', text: '我对别人的问题不感兴趣', r: true },
+      { d: 'agreeableness', text: '我会让别人感到自在', r: false },
+      { d: 'agreeableness', text: '我容易与他人发生争执', r: true },
+      { d: 'agreeableness', text: '我待人温和友善', r: false },
+      { d: 'agreeableness', text: '我有时会冷落别人', r: true },
+
+      { d: 'conscientiousness', text: '我总是为事情提前做好准备', r: false },
+      { d: 'conscientiousness', text: '我常常随手乱放东西', r: true },
+      { d: 'conscientiousness', text: '我很在意把事情做好', r: false },
+      { d: 'conscientiousness', text: '我做事常常拖到最后一刻', r: true },
+      { d: 'conscientiousness', text: '我做事有条理、按计划进行', r: false },
+      { d: 'conscientiousness', text: '我经常忘记把东西放回原处', r: true },
+      { d: 'conscientiousness', text: '我会立刻完成该做的事', r: false },
+      { d: 'conscientiousness', text: '我做事有时不太认真', r: true },
+      { d: 'conscientiousness', text: '我遵守自己定下的计划和规则', r: false },
+      { d: 'conscientiousness', text: '我常在最后一刻才匆忙完成事情', r: true },
+
+      { d: 'neuroticism', text: '我容易感到压力', r: false },
+      { d: 'neuroticism', text: '我大部分时间心情平静', r: true },
+      { d: 'neuroticism', text: '我很容易感到焦虑', r: false },
+      { d: 'neuroticism', text: '我很少感到沮丧', r: true },
+      { d: 'neuroticism', text: '我会因为小事而心烦', r: false },
+      { d: 'neuroticism', text: '我的情绪比较稳定', r: true },
+      { d: 'neuroticism', text: '我经常感到情绪低落', r: false },
+      { d: 'neuroticism', text: '我不太容易生气', r: true },
+      { d: 'neuroticism', text: '我容易紧张不安', r: false },
+      { d: 'neuroticism', text: '我很少感到忧郁', r: true },
+
+      { d: 'openness', text: '我喜欢探索新事物', r: false },
+      { d: 'openness', text: '我不太有想象力', r: true },
+      { d: 'openness', text: '我对抽象的想法感兴趣', r: false },
+      { d: 'openness', text: '我更喜欢按老办法做事', r: true },
+      { d: 'openness', text: '我经常冒出创造性的想法', r: false },
+      { d: 'openness', text: '我不太喜欢思考深奥的问题', r: true },
+      { d: 'openness', text: '我欣赏艺术和自然之美', r: false },
+      { d: 'openness', text: '我对新奇的体验没什么兴趣', r: true },
+      { d: 'openness', text: '我的好奇心很强', r: false },
+      { d: 'openness', text: '我的兴趣爱好比较狭窄', r: true }
+    ],
+    interpretation: {
+      extraversion: {
+        high: '你的外向性较高：喜欢与人打交道，在社交中汲取能量，天生适合需要沟通与协作的环境。',
+        mid: '你的外向性居中：既能与人愉快相处，也需要独处充电，社交节奏由你灵活掌控。',
+        low: '你的外向性偏低：你更享受安静和深度思考，独处能让你恢复能量，社交不在于多而在于精。'
+      },
+      agreeableness: {
+        high: '你的宜人性较高：你体贴、信任他人，善于合作，是团队中天然的黏合剂。',
+        mid: '你的宜人性居中：你既愿意合作，也会在必要时坚持自己的立场，分寸拿捏得当。',
+        low: '你的宜人性偏低：你更看重原则与效率，敢于直言，不轻易被他人的期待左右。'
+      },
+      conscientiousness: {
+        high: '你的尽责性较高：自律、有条理、可靠，习惯把事情计划好并坚持执行。',
+        mid: '你的尽责性居中：你在大事上靠谱，也能接受适度的灵活与随性，张弛有度。',
+        low: '你的尽责性偏低：你更随性灵活、讨厌条条框框，擅长在开放环境中迸发灵感。'
+      },
+      neuroticism: {
+        high: '你的情绪敏感性较高：你感受强烈、容易觉察风险与细节，但也会更容易紧张焦虑。',
+        mid: '你的情绪稳定性居中：多数时候能保持平稳，遇到压力时会有波动但能恢复。',
+        low: '你的情绪稳定性较高：你遇事冷静、抗压能力强，不容易被外界干扰打乱节奏。'
+      },
+      openness: {
+        high: '你的开放性较高：好奇心强、想象力丰富，乐于接受新观念和新体验，思维活跃。',
+        mid: '你的开放性居中：你既愿意尝试新鲜事物，也重视经验与惯例，务实而有弹性。',
+        low: '你的开放性偏低：你偏好熟悉、具体和可预期的事物，专注与踏实是你的优势。'
+      }
+    },
+    advice: {
+      extraversion: {
+        high: [
+          '发挥连接者的优势：主动承担需要沟通、协调与表达的角色，你会如鱼得水。',
+          '注意给自己留出独处时间，避免过度依赖外部刺激而透支精力。',
+          '在人际中练习倾听多于表达，让交流更有深度。'
+        ],
+        low: [
+          '接受并珍惜自己的节奏：深度工作与一对一的交流更适合你，不必强迫自己成为"热闹的人"。',
+          '有意识地在重要场合迈出一步（如主动问候、表达观点），每次一点点即可。',
+          '选择安静但需要专业深度的岗位或任务，把内向变成专注的优势。'
+        ]
+      },
+      agreeableness: {
+        high: [
+          '你的合作与共情是稀缺资源：适合团队协作、服务他人、建立信任的工作。',
+          '学会说"不"：为重要的事设好边界，避免因过度迎合而委屈自己。',
+          '在冲突中练习直接表达感受，而不是一味回避。'
+        ],
+        low: [
+          '你的直率与原则性是优势：适合需要客观判断、坚持标准的场景。',
+          '练习在表达观点前先复述对方的立场，减少不必要的对抗感。',
+          '有意识地维护关键关系：合作中多给一次信任，往往能换来更长远的支持。'
+        ]
+      },
+      conscientiousness: {
+        high: [
+          '你是执行力的标杆：适合制定计划、推进项目、精细管理的角色。',
+          '警惕完美主义消耗：给任务设定"足够好"的标准，避免在细节上过度停留。',
+          '定期留白：计划表里为自己预留弹性时间，接纳意外的发生。'
+        ],
+        low: [
+          '你的灵活与随性适合探索期和创新任务：快速试错是你的天然优势。',
+          '用外部工具补足自律：清单、提醒、截止日，把"随性"装进框架里。',
+          '把重要事项拆成小的即时动作，减少"开始"的心理门槛。'
+        ]
+      },
+      neuroticism: {
+        high: [
+          '你的敏感让你更早察觉风险与情绪变化，这是感知力强的体现。',
+          '建立情绪急救包：深呼吸、运动、倾诉，在压力刚出现时就启动调节。',
+          '减少信息过载，给大脑设置"下班时间"，避免睡前反复反刍。'
+        ],
+        low: [
+          '你的稳定是团队的定海神针：危机时人们会本能地看向你。',
+          '适度警觉：过于放松时提醒自己复核关键细节，别让从容变成疏忽。',
+          '主动关心身边情绪波动大的伙伴，你的稳定能成为他人的依靠。'
+        ]
+      },
+      openness: {
+        high: [
+          '你的好奇心适合需要创意、跨界与探索的领域：写作、设计、研究、新产品。',
+          '给灵感设置产出通道：把想法快速落地成小作品，避免只停留在空想。',
+          '用"聚焦"平衡发散：选一个方向深耕一段时间，让兴趣变成能力。'
+        ],
+        low: [
+          '你的专注与务实让你在熟悉领域越做越精，这是难以替代的价值。',
+          '用微小的新体验拓宽视野：换一条路回家、尝试一道新菜、读一本陌生领域的书。',
+          '不必追逐流行，找到自己真正在意的一两件事深入下去即可。'
+        ]
+      }
+    }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+(function (global) {
+  'use strict';
+  global.AppData = global.AppData || {};
+  global.AppData.resilience = {
+    id: 'resilience',
+    name: '心理韧性',
+    intro: '心理韧性衡量你在压力、挫折和逆境之后恢复与反弹的能力。高韧性的人更能把困难转化成成长的养分。',
+    minutes: 2,
+    scaleType: 'single',
+    dimensions: [
+      { id: 'resilience', name: '心理韧性' }
+    ],
+    items: [
+      { d: 'resilience', text: '我倾向于从挫折中迅速恢复过来', r: false },
+      { d: 'resilience', text: '我很难熬过压力事件', r: true },
+      { d: 'resilience', text: '压力过去后，我通常很快就能恢复', r: false },
+      { d: 'resilience', text: '遇到不顺心的事，我往往要花很长时间才能缓过来', r: true },
+      { d: 'resilience', text: '我通常能轻松渡过难关', r: false },
+      { d: 'resilience', text: '我往往需要很久才能从生活中的挫折中振作起来', r: true }
+    ],
+    interpretation: {
+      resilience: {
+        high: '你的心理韧性较高：面对压力和挫折，你能较快恢复并把注意力放回行动上，是抗压能力较强的类型。',
+        mid: '你的心理韧性居中：你能应对一般压力，但遭遇重大挫折时也会需要一段时间调整和恢复。',
+        low: '你的心理韧性偏低：压力对你影响较大，恢复需要更长时间，但也意味着你对自己和他人有更细腻的觉察。'
+      }
+    },
+    advice: {
+      resilience: {
+        high: [
+          '把这种复原力用在更有挑战的目标上：主动承担需要长期坚持的事情。',
+          '别忘记示弱也是力量：让信任的人知道你也会累，关系会更真实。'
+        ],
+        low: [
+          '把大压力拆成小步骤：先处理能控制的一小部分，行动会自然降低焦虑。',
+          '建立你的"恢复清单"：睡眠、运动、倾诉、放松，压力一来就按清单执行。',
+          '挫折后先接纳情绪，再复盘行动：允许自己休息一天，比强迫振作更有效。'
+        ]
+      }
+    }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+(function (global) {
+  'use strict';
+  global.AppData = global.AppData || {};
+  global.AppData.cse = {
+    id: 'cse',
+    name: '核心自我评价',
+    intro: '核心自我评价反映你对自己价值与能力的整体看法，与自尊、自我效能、情绪稳定性和控制感密切相关，是自我认知的深层指标。',
+    minutes: 3,
+    scaleType: 'single',
+    dimensions: [
+      { id: 'cse', name: '核心自我评价' }
+    ],
+    items: [
+      { d: 'cse', text: '我有信心能获得人生中应得的成功', r: false },
+      { d: 'cse', text: '有时候我觉得自己很沮丧', r: true },
+      { d: 'cse', text: '当我努力时，我通常能成功', r: false },
+      { d: 'cse', text: '有时当我失败时，我觉得自己毫无价值', r: true },
+      { d: 'cse', text: '我能把事情顺利完成', r: false },
+      { d: 'cse', text: '有时候我觉得自己无法掌控自己的工作', r: true },
+      { d: 'cse', text: '总体来说，我对自己感到满意', r: false },
+      { d: 'cse', text: '我常常怀疑自己的能力', r: true },
+      { d: 'cse', text: '我能决定自己人生中发生的事情', r: false },
+      { d: 'cse', text: '我觉得自己无法掌控职业上的成功', r: true },
+      { d: 'cse', text: '我有能力处理自己遇到的大多数问题', r: false },
+      { d: 'cse', text: '很多时候我感觉前途渺茫', r: true }
+    ],
+    interpretation: {
+      cse: {
+        high: '你的核心自我评价较高：你总体上信任自己的价值与能力，面对任务更自信、更少内耗。',
+        mid: '你的核心自我评价居中：你大多数时候相信自己，但在具体挫折面前也会产生自我怀疑。',
+        low: '你的核心自我评价偏低：你可能常常自我审视、对外界评价敏感，这份敏锐也让你更早发现自己的不足。'
+      }
+    },
+    advice: {
+      cse: {
+        high: [
+          '你的自信是宝贵的资源：主动迎接有挑战性的目标，让自信转化为实绩。',
+          '保持谦逊的校准：请信任的人给你反馈，避免自信变成盲区。'
+        ],
+        low: [
+          '用"小赢"积累自我证据：每天完成一件小事并记录它，事实比感觉更有说服力。',
+          '把自我批评改成自我教练：问自己"如果是朋友遇到同样的事，我会怎么劝他"。',
+          '区分"事实"与"感觉"：感觉差不等于做得差，用数据（完成的事、别人的反馈）来校正判断。'
+        ]
+      }
+    }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+(function (global) {
+  'use strict';
+  var AppCore = {};
+
+  /* ========== 工具 ========== */
+  AppCore.utils = {
+    clone: function (o) { return JSON.parse(JSON.stringify(o)); },
+    now: function () { return Date.now(); },
+    pad: function (n) { return n < 10 ? '0' + n : '' + n; },
+    formatTime: function (ts) {
+      var d = new Date(ts);
+      return d.getFullYear() + '-' + AppCore.utils.pad(d.getMonth() + 1) + '-' + AppCore.utils.pad(d.getDate()) +
+        ' ' + AppCore.utils.pad(d.getHours()) + ':' + AppCore.utils.pad(d.getMinutes());
+    },
+    formatDate: function (ts) {
+      var d = new Date(ts);
+      return d.getFullYear() + '-' + AppCore.utils.pad(d.getMonth() + 1) + '-' + AppCore.utils.pad(d.getDate());
+    },
+    // 简单防 XSS：转义文本（渲染用户输入的档案名等）
+    esc: function (s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+  };
+
+  /* ========== 题库目录 ========== */
+  AppCore.catalog = {
+    list: function () {
+      var data = global.AppData || {};
+      return [data.bigFive, data.resilience, data.cse].filter(Boolean);
+    },
+    get: function (scaleId) {
+      return (global.AppData || {})[scaleId] || null;
+    },
+    // 题库完整性校验：返回 {ok, errors[]}
+    validate: function () {
+      var errors = [];
+      var scales = AppCore.catalog.list();
+      if (scales.length !== 3) errors.push('应包含 3 个量表，实际 ' + scales.length);
+      scales.forEach(function (s) {
+        if (!s.id || !s.name || !s.intro) errors.push(s.id + ': 缺少元信息');
+        if (!s.items || s.items.length === 0) errors.push(s.id + ': 无题目');
+        s.items.forEach(function (it, i) {
+          if (!it.d) errors.push(s.id + ' 第' + (i + 1) + '题缺少维度');
+          if (!it.text) errors.push(s.id + ' 第' + (i + 1) + '题缺少题干');
+          if (typeof it.r !== 'boolean') errors.push(s.id + ' 第' + (i + 1) + '题缺少反向标记');
+          if (!s.dimensions.some(function (d) { return d.id === it.d; })) {
+            errors.push(s.id + ' 第' + (i + 1) + '题维度非法: ' + it.d);
+          }
+        });
+        s.dimensions.forEach(function (d) {
+          var n = s.items.filter(function (it) { return it.d === d.id; }).length;
+          if (n === 0) errors.push(s.id + ' 维度 ' + d.id + ' 无题目');
+        });
+        Object.keys(s.interpretation || {}).forEach(function (d) {
+          var itp = s.interpretation[d];
+          if (!itp.high || !itp.mid || !itp.low) errors.push(s.id + ' 维度 ' + d + ' 解读缺档位');
+        });
+        Object.keys(s.advice || {}).forEach(function (d) {
+          var adv = s.advice[d];
+          if (!adv.high || !adv.low || adv.high.length === 0 || adv.low.length === 0) {
+            errors.push(s.id + ' 维度 ' + d + ' 建议缺失');
+          }
+        });
+      });
+      return { ok: errors.length === 0, errors: errors };
+    }
+  };
+
+  /* ========== 路由解析（hash） ========== */
+  // 支持：#/ 首页(档案选择)  #/profile 档案首页  #/scale/:scaleId 量表介绍
+  //       #/quiz/:scaleId 答题  #/report/:attemptId 报告  #/history 历史  #/settings 设置  #/test 自测
+  AppCore.router = {
+    parse: function (hash) {
+      var h = (hash || '').replace(/^#/, '');
+      if (!h || h === '/') return { name: 'home' };
+      var parts = h.split('/').filter(Boolean);
+      if (parts.length === 0) return { name: 'home' };
+      var name = parts[0];
+      var known = ['home', 'profile', 'scale', 'quiz', 'report', 'history', 'settings', 'test'];
+      if (known.indexOf(name) === -1) return { name: 'home' };
+      var params = {};
+      if (name === 'scale' && parts[1]) params.scaleId = parts[1];
+      if (name === 'quiz' && parts[1]) params.scaleId = parts[1];
+      if (name === 'report' && parts[1]) params.attemptId = Number(parts[1]);
+      return { name: name, params: params };
+    }
+  };
+
+  /* ========== 存储层（异步 adapter，Promise 风格） ========== */
+  // adapter 接口（全部返回 Promise）：
+  //   ready(), getAll(store), get(store,id), put(store,obj), remove(store,id), clear(store)
+  AppCore.createMemoryAdapter = function () {
+    var mem = {};
+    return {
+      ready: function () { return Promise.resolve(); },
+      getAll: function (store) { return Promise.resolve(Array.from((mem[store] || []).values())); },
+      get: function (store, id) {
+        var arr = mem[store] || [];
+        var found = null;
+        arr.some(function (o) { if (o.id === id) { found = o; return true; } return false; });
+        return Promise.resolve(found);
+      },
+      put: function (store, obj) {
+        if (!mem[store]) mem[store] = [];
+        var arr = mem[store];
+        var i = -1;
+        arr.some(function (o, idx) { if (o.id === obj.id) { i = idx; return true; } return false; });
+        if (i >= 0) arr[i] = obj; else arr.push(obj);
+        return Promise.resolve(obj);
+      },
+      remove: function (store, id) {
+        if (mem[store]) mem[store] = mem[store].filter(function (o) { return o.id !== id; });
+        return Promise.resolve();
+      },
+      clear: function (store) { mem[store] = []; return Promise.resolve(); }
+    };
+  };
+
+  // store 方法全部返回 Promise
+  AppCore.createStore = function (adapter) {
+    var seq = { profile: 0, attempt: 0 };
+    var store = {};
+
+    function nextId(kind) { seq[kind] += 1; return seq[kind]; }
+    function initSeq() {
+      return adapter.getAll('profiles').then(function (ps) {
+        ps.forEach(function (p) { if (p.id > seq.profile) seq.profile = p.id; });
+        return adapter.getAll('attempts');
+      }).then(function (as) {
+        as.forEach(function (a) { if (a.id > seq.attempt) seq.attempt = a.id; });
+      });
+    }
+
+    store.ready = function () {
+      return Promise.resolve(adapter.ready()).then(initSeq);
+    };
+
+    // ---- profiles ----
+    store.listProfiles = function () {
+      return adapter.getAll('profiles').then(function (ps) {
+        return ps.sort(function (a, b) {
+          if (a.createdAt !== b.createdAt) return a.createdAt - b.createdAt;
+          return a.id - b.id;
+        });
+      });
+    };
+    store.getProfile = function (id) { return adapter.get('profiles', id); };
+    store.createProfile = function (name) {
+      var n = String(name == null ? '' : name).trim();
+      if (!n) return Promise.resolve({ ok: false, error: '档案名不能为空' });
+      if (n.length > 20) return Promise.resolve({ ok: false, error: '档案名不能超过 20 字' });
+      var p = { id: nextId('profile'), name: n, createdAt: AppCore.utils.now(), updatedAt: AppCore.utils.now() };
+      return adapter.put('profiles', p).then(function () { return { ok: true, profile: p }; });
+    };
+    store.renameProfile = function (id, name) {
+      var n = String(name == null ? '' : name).trim();
+      if (!n) return Promise.resolve({ ok: false, error: '档案名不能为空' });
+      if (n.length > 20) return Promise.resolve({ ok: false, error: '档案名不能超过 20 字' });
+      return adapter.get('profiles', id).then(function (p) {
+        if (!p) return { ok: false, error: '档案不存在' };
+        p.name = n;
+        p.updatedAt = AppCore.utils.now();
+        return adapter.put('profiles', p).then(function () { return { ok: true, profile: p }; });
+      });
+    };
+    store.deleteProfile = function (id) {
+      return adapter.remove('profiles', id).then(function () {
+        return adapter.getAll('attempts');
+      }).then(function (all) {
+        var dels = all.filter(function (a) { return a.profileId === id; }).map(function (a) { return adapter.remove('attempts', a.id); });
+        return Promise.all(dels);
+      }).then(function () { return { ok: true }; });
+    };
+    store.countAttemptsOfProfile = function (id) {
+      return adapter.getAll('attempts').then(function (all) {
+        return all.filter(function (a) { return a.profileId === id; }).length;
+      });
+    };
+
+    // ---- attempts ----
+    store.listAttempts = function (profileId) {
+      return adapter.getAll('attempts').then(function (all) {
+        if (profileId != null) all = all.filter(function (a) { return a.profileId === profileId; });
+        return all.sort(function (a, b) {
+          if (a.startedAt !== b.startedAt) return b.startedAt - a.startedAt;
+          return b.id - a.id;
+        });
+      });
+    };
+    store.listCompletedAttempts = function (profileId) {
+      return store.listAttempts(profileId).then(function (all) {
+        return all.filter(function (a) { return a.status === 'completed'; });
+      });
+    };
+    store.getAttempt = function (id) { return adapter.get('attempts', id); };
+    store.createAttempt = function (profileId, scaleId) {
+      return adapter.get('profiles', profileId).then(function (p) {
+        if (!p) return { ok: false, error: '档案不存在' };
+        var scale = AppCore.catalog.get(scaleId);
+        if (!scale) return { ok: false, error: '量表不存在' };
+        var a = {
+          id: nextId('attempt'), profileId: profileId, scaleId: scaleId,
+          status: 'draft', answers: [], currentIndex: 0,
+          startedAt: AppCore.utils.now(), completedAt: null, result: null
+        };
+        return adapter.put('attempts', a).then(function () { return { ok: true, attempt: a }; });
+      });
+    };
+    store.findDraft = function (profileId, scaleId) {
+      return adapter.getAll('attempts').then(function (all) {
+        var drafts = all.filter(function (a) {
+          return a.profileId === profileId && a.scaleId === scaleId && a.status === 'draft';
+        });
+        drafts.sort(function (a, b) { return a.startedAt - b.startedAt; });
+        return drafts.length ? drafts[drafts.length - 1] : null;
+      });
+    };
+    store.saveAnswer = function (attemptId, qIndex, value) {
+      return adapter.get('attempts', attemptId).then(function (a) {
+        if (!a) return { ok: false, error: '测试不存在' };
+        var scale = AppCore.catalog.get(a.scaleId);
+        if (!scale) return { ok: false, error: '量表不存在' };
+        if (qIndex < 0 || qIndex >= scale.items.length) return { ok: false, error: '题目序号非法' };
+        if (value < 1 || value > 5) return { ok: false, error: '选项值非法' };
+        a.answers = a.answers.filter(function (x) { return x.qIndex !== qIndex; });
+        a.answers.push({ qIndex: qIndex, value: value });
+        if (a.status === 'draft') a.currentIndex = Math.max(a.currentIndex, qIndex + 1);
+        return adapter.put('attempts', a).then(function () { return { ok: true, attempt: a }; });
+      });
+    };
+    store.completeAttempt = function (attemptId, result) {
+      return adapter.get('attempts', attemptId).then(function (a) {
+        if (!a) return { ok: false, error: '测试不存在' };
+        a.status = 'completed';
+        a.completedAt = AppCore.utils.now();
+        a.result = result;
+        return adapter.get('profiles', a.profileId).then(function (p) {
+          if (p) { p.updatedAt = AppCore.utils.now(); return adapter.put('profiles', p); }
+          return null;
+        }).then(function () { return adapter.put('attempts', a); })
+          .then(function () { return { ok: true, attempt: a }; });
+      });
+    };
+    store.deleteAttempt = function (attemptId) {
+      return adapter.remove('attempts', attemptId).then(function () { return { ok: true }; });
+    };
+
+    // ---- 数据管理 ----
+    store.exportAll = function () {
+      return Promise.all([adapter.getAll('profiles'), adapter.getAll('attempts')]).then(function (r) {
+        return {
+          app: 'personality-explorer',
+          version: 1,
+          exportedAt: AppCore.utils.now(),
+          profiles: r[0],
+          attempts: r[1]
+        };
+      });
+    };
+    store.clearAll = function () {
+      return adapter.clear('profiles').then(function () { return adapter.clear('attempts'); })
+        .then(function () { return { ok: true }; });
+    };
+
+    return store;
+  };
+
+  /* ========== 视图数据准备（纯函数，供 app 层渲染） ========== */
+  // 档案首页：测试中心各量表状态
+  AppCore.buildScaleCards = function (profileId, store) {
+    return store.listAttempts(profileId).then(function (attempts) {
+      return AppCore.catalog.list().map(function (scale) {
+        var sAttempts = attempts.filter(function (a) { return a.scaleId === scale.id; });
+        var completed = sAttempts.filter(function (a) { return a.status === 'completed'; });
+        var hasDraft = sAttempts.some(function (a) { return a.status === 'draft'; });
+        var lastCompleted = completed.length ? completed[0] : null;
+        var state = hasDraft ? 'draft' : (completed.length ? 'done' : 'new');
+        return {
+          scale: scale,
+          state: state,
+          lastCompleted: lastCompleted,
+          attemptsCount: completed.length
+        };
+      });
+    });
+  };
+
+  // 档案首页：汇总数据（档案信息 + 最近完成报告 + 完成数量）
+  AppCore.buildProfileHomeData = function (profile, store) {
+    return store.listCompletedAttempts(profile.id).then(function (completed) {
+      var last = completed.length ? completed[0] : null;
+      var lastSeq = 0;
+      if (last) {
+        lastSeq = completed.filter(function (a) { return a.scaleId === last.scaleId; }).length;
+      }
+      return {
+        profile: profile,
+        lastReport: last,
+        lastSeq: lastSeq,
+        totalCompleted: completed.length
+      };
+    });
+  };
+
+  /* ========== 答题状态与计分 ========== */
+  // 由 attempt 与 scale 推导当前答题状态
+  AppCore.quizState = function (attempt, scale) {
+    var answered = {};
+    (attempt.answers || []).forEach(function (a) { answered[a.qIndex] = a.value; });
+    var total = scale.items.length;
+    var index = attempt.currentIndex;
+    if (index >= total) index = total - 1;
+    if (index < 0) index = 0;
+    var allAnswered = Object.keys(answered).length === total;
+    return {
+      index: index,
+      total: total,
+      answered: answered,
+      answeredCount: Object.keys(answered).length,
+      isAnswered: answered[index] != null,
+      currentValue: answered[index] != null ? answered[index] : null,
+      allAnswered: allAnswered
+    };
+  };
+
+  // 计分：5 点量表（1-5），反向题 6-v；维度原始分线性标准化到 0-100
+  // answers: [{qIndex, value}]（value 1-5）
+  AppCore.computeScores = function (scale, answers) {
+    var map = {};
+    (answers || []).forEach(function (a) { map[a.qIndex] = a.value; });
+    var dims = scale.dimensions.map(function (d) {
+      var min = 0, max = 0, sum = 0;
+      scale.items.forEach(function (it, i) {
+        if (it.d !== d.id) return;
+        var v = map[i];
+        if (v == null) v = 3; // 防御：缺失题按中立 3 处理
+        var s = it.r ? (6 - v) : v;
+        sum += s;
+        min += 1;
+        max += 5;
+      });
+      var pct = max === min ? 50 : Math.round(((sum - min) / (max - min)) * 100);
+      pct = Math.max(0, Math.min(100, pct));
+      return { id: d.id, name: d.name, raw: sum, pct: pct };
+    });
+    var scores = {};
+    dims.forEach(function (d) { scores[d.id] = d.pct; });
+    return { dims: dims, scores: scores, scaleId: scale.id };
+  };
+
+  /* ========== 报告数据构建 ========== */
+  // 分档：>=66 high，34~65 mid，<=33 low
+  AppCore.bandOf = function (pct) {
+    if (pct >= 66) return 'high';
+    if (pct <= 33) return 'low';
+    return 'mid';
+  };
+
+  // 该测试是该量表第几次完成（从 1 开始）
+  AppCore.attemptSeq = function (store, attempt) {
+    return store.listCompletedAttempts(attempt.profileId).then(function (completed) {
+      var same = completed.filter(function (a) { return a.scaleId === attempt.scaleId; });
+      same.sort(function (a, b) {
+        if (a.completedAt !== b.completedAt) return a.completedAt - b.completedAt;
+        return a.id - b.id;
+      });
+      var seq = 0;
+      same.some(function (a) { seq += 1; return a.id === attempt.id; });
+      return seq;
+    });
+  };
+
+  // 由 scale + result 生成完整报告展示数据
+  AppCore.buildReportData = function (scale, result) {
+    var dims = (result.dims || []).map(function (d) {
+      var itp = scale.interpretation[d.id] || { high: '', mid: '', low: '' };
+      var adv = scale.advice[d.id] || { high: [], low: [] };
+      var band = AppCore.bandOf(d.pct);
+      return {
+        id: d.id, name: d.name, pct: d.pct, raw: d.raw, band: band,
+        text: itp[band] || '',
+        advice: band === 'mid' ? (d.pct >= 50 ? adv.high : adv.low) : adv[band]
+      };
+    });
+    var radarData = dims.map(function (d) { return { name: d.name, value: d.pct }; });
+
+    // 综合小结：单维量表与多维量表不同框架
+    var summary = '';
+    if (scale.scaleType === 'multi') {
+      var sorted = dims.slice().sort(function (a, b) { return b.pct - a.pct; });
+      var top = sorted[0];
+      var bottom = sorted[sorted.length - 1];
+      summary = '你的核心特质是「' + top.name + '」（' + top.pct + ' 分），这是你性格中最鲜明的部分，决定了你给人的第一印象与主要行为风格。' +
+        '相对而言，你在「' + bottom.name + '」上得分偏低（' + bottom.pct + ' 分），这是你性格中较少显现的一面，也是成长空间所在。' +
+        '人格没有好坏之分，各维度得分反映的是你更习惯、更舒适的行为方式；理解它们，是为了更好地接纳自己，并在需要时灵活调整。';
+    } else {
+      var d0 = dims[0];
+      summary = '你的「' + scale.name + '」得分为 ' + d0.pct + ' 分，处于' + (d0.band === 'high' ? '较高' : (d0.band === 'low' ? '偏低' : '中等')) + '水平。' +
+        d0.text + ' 这一结果不是固定标签，压力、睡眠、生活阶段都会影响当下的状态，可以过一段时间复测观察变化。';
+    }
+
+    return { scale: scale, dims: dims, radarData: radarData, summary: summary };
+  };
+
+  // 历史列表数据：时间倒序 + 每个测试的序号与量表信息
+  AppCore.historyListData = function (profileId, store) {
+    return store.listCompletedAttempts(profileId).then(function (list) {
+      return Promise.all(list.map(function (a) {
+        return AppCore.attemptSeq(store, a).then(function (seq) {
+          return { attempt: a, seq: seq, scale: AppCore.catalog.get(a.scaleId) };
+        });
+      }));
+    });
+  };
+
+  /* ========== 历史对比数据 ========== */
+  // 对选中的若干 completed attempts（须同一量表）生成对比数据
+  // 返回 {scale, dims, series:[{label,data,color}], deltas:[{name,diff,dir,value}]}
+  AppCore.buildCompareData = function (attempts, store, colors) {
+    var cols = colors || ['#5f8f7a', '#b07d62', '#7a9cc6', '#a97a9c'];
+    return Promise.all(attempts.map(function (a) {
+      var scale = AppCore.catalog.get(a.scaleId);
+      var data = AppCore.buildReportData(scale, a.result);
+      return Promise.all([{ a: a, data: data, scale: scale }, AppCore.attemptSeq(store, a)]);
+    })).then(function (pairs) {
+      var first = pairs[0][0];
+      var dims = first.data.radarData.map(function (d) { return d.name; });
+      var series = pairs.map(function (pair, idx) {
+        var p = pair[0], seq = pair[1];
+        return {
+          label: '第' + seq + '次',
+          data: p.data.radarData.map(function (d) { return d.value; }),
+          color: cols[idx % cols.length],
+          fill: 'rgba(0,0,0,0)'
+        };
+      });
+      var deltas = [];
+      if (pairs.length >= 2) {
+        var cur = series[series.length - 1].data;
+        var base = series[series.length - 2].data;
+        dims.forEach(function (name, i) {
+          var diff = cur[i] - base[i];
+          deltas.push({
+            name: name,
+            diff: diff,
+            dir: diff > 1 ? 'up' : (diff < -1 ? 'down' : 'flat'),
+            value: cur[i]
+          });
+        });
+      }
+      return { scale: first.scale, dims: dims, series: series, deltas: deltas };
+    });
+  };
+
+  /* ========== 导出：SVG 雷达图与独立 HTML 报告 ========== */
+  // 生成 SVG 雷达图字符串（纯函数，用于 HTML 导出，静态可打印）
+  AppCore.svgRadar = function (radarData, series, size) {
+    var n = radarData.length;
+    if (n < 3) return '';
+    var esc = AppCore.utils.esc;
+    var cx = size / 2, cy = size / 2, R = size * 0.32;
+    function pt(i, r) {
+      var ang = -Math.PI / 2 + (2 * Math.PI * i) / n;
+      return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+    }
+    function polyPts(f) {
+      var pts = [];
+      for (var i = 0; i < n; i++) { var p = pt(i, R * f); pts.push(p[0] + ',' + p[1]); }
+      return pts.join(' ');
+    }
+    var grid = [0.25, 0.5, 0.75, 1].map(function (f) {
+      return '<polygon points="' + polyPts(f) + '" fill="none" stroke="#e4e0d8"/>';
+    }).join('');
+    var axes = radarData.map(function (_, i) {
+      var p = pt(i, R);
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="#e4e0d8"/>';
+    }).join('');
+    var labels = radarData.map(function (l, i) {
+      var p = pt(i, R * 1.18);
+      return '<text x="' + p[0] + '" y="' + p[1] + '" font-size="13" text-anchor="middle" fill="#33302b">' + esc(l.name) + '</text>';
+    }).join('');
+    var polys = series.map(function (s) {
+      var pts = s.data.map(function (v, i) {
+        var p = pt(i, R * Math.max(0, Math.min(100, v)) / 100);
+        return p[0] + ',' + p[1];
+      }).join(' ');
+      return '<polygon points="' + pts + '" fill="' + (s.fill || 'rgba(95,143,122,.25)') + '" stroke="' + s.color + '" stroke-width="2"/>';
+    }).join('');
+    return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" xmlns="http://www.w3.org/2000/svg">' +
+      grid + axes + polys + labels + '</svg>';
+  };
+
+  // 生成独立 HTML 报告（无外部依赖，可离线打开）
+  AppCore.buildHtmlReport = function (opts) {
+    var esc = AppCore.utils.esc;
+    var scale = opts.scale, data = opts.data, profileName = opts.profileName || '',
+      timeText = opts.timeText || '', seqText = opts.seqText || '';
+    var radar = scale.scaleType === 'multi'
+      ? '<div class="radar">' + AppCore.svgRadar(data.radarData, [{ data: data.radarData.map(function (d) { return d.value; }), color: '#5f8f7a', fill: 'rgba(95,143,122,.25)' }], 420) + '</div>'
+      : '<div class="single">' + data.dims.map(function (d) {
+        return '<div class="srow"><div class="sname">' + esc(d.name) + '</div><div class="sbar"><div class="sfill" style="width:' + d.pct + '%"></div></div><div class="sval">' + d.pct + ' 分</div></div>';
+      }).join('') + '</div>';
+    var dims = data.dims.map(function (d) {
+      return '<div class="dim"><div class="dimhead"><span class="dimname">' + esc(d.name) + '</span><span class="dimscore">' + d.pct + ' 分</span></div>' +
+        '<div class="bar"><div class="fill" style="width:' + d.pct + '%"></div></div>' +
+        '<p class="desc">' + esc(d.text) + '</p>' +
+        (d.advice.length ? '<ul class="advice">' + d.advice.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '') +
+        '</div>';
+    }).join('');
+    return '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+      '<title>' + esc(scale.name) + '报告</title>' +
+      '<style>' +
+      'body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:#f6f4ef;color:#33302b;margin:0;padding:24px;line-height:1.6}' +
+      '.wrap{max-width:640px;margin:0 auto}.head{text-align:center;padding:12px 0 8px}' +
+      '.head h1{margin:0;font-size:26px}.head .meta{color:#8a857d;font-size:14px}' +
+      '.radar{max-width:420px;margin:12px auto}' +
+      '.single{max-width:420px;margin:14px auto}.srow{display:flex;align-items:center;gap:10px;margin:8px 0}' +
+      '.sname{width:90px;font-size:14px;font-weight:600}.sbar{flex:1;height:10px;background:#eeeae1;border-radius:6px;overflow:hidden}' +
+      '.sfill{height:100%;background:#5f8f7a;border-radius:6px}.sval{width:52px;text-align:right;font-size:14px;font-weight:700;color:#4a7462}' +
+      '.dim{background:#fff;border:1px solid #e4e0d8;border-radius:12px;padding:14px 16px;margin:12px 0}' +
+      '.dimhead{display:flex;justify-content:space-between}.dimname{font-weight:700}.dimscore{color:#4a7462;font-weight:700}' +
+      '.bar{height:8px;background:#eeeae1;border-radius:6px;overflow:hidden;margin:8px 0}.fill{height:100%;background:#5f8f7a;border-radius:6px}' +
+      '.desc{font-size:14px;margin:6px 0}.advice{margin:4px 0 0;padding-left:20px}.advice li{font-size:14px;margin:4px 0}' +
+      '.summary{background:#e7efe9;border-radius:12px;padding:16px;font-size:15px;margin:14px 0}' +
+      '.foot{text-align:center;color:#8a857d;font-size:12px;margin-top:20px}' +
+      '</style></head><body><div class="wrap">' +
+      '<div class="head"><h1>' + esc(scale.name) + '人格报告</h1><div class="meta">' + esc(profileName) + ' · ' + esc(timeText) + ' · ' + esc(seqText) + '</div></div>' +
+      radar + dims +
+      '<div class="summary">' + esc(data.summary) + '</div>' +
+      '<p class="foot">本报告由「人格探索」基于你的作答生成，仅用于自我了解参考，不构成心理诊断。</p>' +
+      '</div></body></html>';
+  };
+
+  global.AppCore = AppCore;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+(function () {
+  'use strict';
+
+  var App = {};
+  var AppState = { store: null, profileId: null, storageMode: 'indexeddb' };
+
+  /* ========== 存储适配器（浏览器） ========== */
+  App.createIndexedDBAdapter = function () {
+    var DB_NAME = 'personality-explorer';
+    var DB_VER = 1;
+    var dbPromise = new Promise(function (resolve, reject) {
+      var req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('profiles')) db.createObjectStore('profiles', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('attempts')) db.createObjectStore('attempts', { keyPath: 'id' });
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error || new Error('IndexedDB 打开失败')); };
+    });
+    function tx(store, mode, fn) {
+      return dbPromise.then(function (db) {
+        return new Promise(function (resolve, reject) {
+          var t = db.transaction(store, mode);
+          var s = t.objectStore(store);
+          var r = null;
+          try { r = fn(s); } catch (e) { reject(e); return; }
+          t.oncomplete = function () { resolve(r && r.result !== undefined ? r.result : undefined); };
+          t.onerror = function () { reject(t.error); };
+          t.onabort = function () { reject(t.error || new Error('事务中止')); };
+        });
+      });
+    }
+    return {
+      ready: function () { return dbPromise.then(function () { return undefined; }); },
+      getAll: function (store) {
+        return tx(store, 'readonly', function (s) { return s.getAll(); }).then(function (r) { return r || []; });
+      },
+      get: function (store, id) {
+        return tx(store, 'readonly', function (s) { return s.get(id); }).then(function (r) { return r || null; });
+      },
+      put: function (store, obj) { return tx(store, 'readwrite', function (s) { return s.put(obj); }); },
+      remove: function (store, id) { return tx(store, 'readwrite', function (s) { return s.delete(id); }); },
+      clear: function (store) { return tx(store, 'readwrite', function (s) { return s.clear(); }); }
+    };
+  };
+
+  App.createLocalStorageAdapter = function () {
+    function read(store) {
+      try { return JSON.parse(localStorage.getItem('pe_' + store) || '[]'); } catch (e) { return []; }
+    }
+    function write(store, arr) { localStorage.setItem('pe_' + store, JSON.stringify(arr)); }
+    return {
+      ready: function () { return Promise.resolve(); },
+      getAll: function (store) { return Promise.resolve(read(store)); },
+      get: function (store, id) {
+        var a = read(store);
+        var found = null;
+        a.some(function (o) { if (o.id === id) { found = o; return true; } return false; });
+        return Promise.resolve(found);
+      },
+      put: function (store, obj) {
+        var a = read(store);
+        var i = -1;
+        a.some(function (o, idx) { if (o.id === obj.id) { i = idx; return true; } return false; });
+        if (i >= 0) a[i] = obj; else a.push(obj);
+        write(store, a);
+        return Promise.resolve(obj);
+      },
+      remove: function (store, id) { write(store, read(store).filter(function (o) { return o.id !== id; })); return Promise.resolve(); },
+      clear: function (store) { write(store, []); return Promise.resolve(); }
+    };
+  };
+
+  /* ========== 公共 UI ========== */
+  App.toast = function (msg) {
+    var wrap = document.getElementById('toast-wrap');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'toast-wrap';
+      wrap.className = 'toast-wrap';
+      document.body.appendChild(wrap);
+    }
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    wrap.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2600);
+  };
+
+  App.confirmModal = function (opts) {
+    return new Promise(function (resolve) {
+      var mask = document.createElement('div');
+      mask.className = 'modal-mask';
+      mask.innerHTML =
+        '<div class="modal" role="dialog" aria-modal="true">' +
+        '<h3>' + AppCore.utils.esc(opts.title || '确认') + '</h3>' +
+        '<p>' + AppCore.utils.esc(opts.text || '') + '</p>' +
+        '<div class="modal-actions">' +
+        '<button class="btn btn-ghost" data-act="cancel">取消</button>' +
+        '<button class="btn ' + (opts.danger ? 'btn-danger' : 'btn-primary') + '" data-act="ok">' + AppCore.utils.esc(opts.confirmText || '确认') + '</button>' +
+        '</div></div>';
+      mask.addEventListener('click', function (e) {
+        var act = e.target && e.target.getAttribute && e.target.getAttribute('data-act');
+        if (act === 'ok') { mask.remove(); resolve(true); }
+        else if (act === 'cancel') { mask.remove(); resolve(false); }
+        else if (e.target === mask) { mask.remove(); resolve(false); }
+      });
+      document.body.appendChild(mask);
+    });
+  };
+
+  App.promptModal = function (opts) {
+    return new Promise(function (resolve) {
+      var mask = document.createElement('div');
+      mask.className = 'modal-mask';
+      mask.innerHTML =
+        '<div class="modal" role="dialog" aria-modal="true">' +
+        '<h3>' + AppCore.utils.esc(opts.title || '输入') + '</h3>' +
+        '<div class="field"><input class="text-input" maxlength="20" placeholder="' + AppCore.utils.esc(opts.placeholder || '') + '"></div>' +
+        '<div class="modal-actions">' +
+        '<button class="btn btn-ghost" data-act="cancel">取消</button>' +
+        '<button class="btn btn-primary" data-act="ok">' + AppCore.utils.esc(opts.okText || '确定') + '</button>' +
+        '</div></div>';
+      var input = mask.querySelector('input');
+      input.focus();
+      function submit() {
+        var v = input.value.trim();
+        if (!v) { input.focus(); return; }
+        mask.remove();
+        resolve(v);
+      }
+      mask.addEventListener('click', function (e) {
+        var act = e.target && e.target.getAttribute && e.target.getAttribute('data-act');
+        if (act === 'ok') submit();
+        else if (act === 'cancel') { mask.remove(); resolve(null); }
+        else if (e.target === mask) { mask.remove(); resolve(null); }
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') submit();
+        else if (e.key === 'Escape') { mask.remove(); resolve(null); }
+      });
+      document.body.appendChild(mask);
+    });
+  };
+
+  App.go = function (hash) { location.hash = hash; };
+
+  App.selectProfile = function (id) {
+    AppState.profileId = id;
+    try { localStorage.setItem('pe_lastProfile', String(id)); } catch (e) { /* 忽略 */ }
+    location.hash = '#/profile';
+  };
+
+  /* ========== 视图注册表（每个视图：html 与 bind） ========== */
+  // 视图函数返回 Promise<HTML 字符串>；bind 在渲染后执行
+  var VIEWS = {};
+
+  VIEWS.home = {
+    html: function () {
+      return AppState.store.listProfiles().then(function (profiles) {
+        var cards = profiles.map(function (p) {
+          return '<div class="card profile-card" data-profile="' + p.id + '" role="button" tabindex="0">' +
+            '<div class="avatar">' + AppCore.utils.esc(p.name.charAt(0)) + '</div>' +
+            '<div class="info"><div class="name">' + AppCore.utils.esc(p.name) + '</div>' +
+            '<div class="meta">创建于 ' + AppCore.utils.formatDate(p.createdAt) + '</div></div>' +
+            '<span class="btn btn-ghost">进入</span></div>';
+        }).join('');
+        var body = profiles.length
+          ? '<div class="card-title">选择档案</div><div class="card-sub">点击档案进入，每人独立保存测试记录</div>' + cards
+          : '<div class="empty"><div style="font-size:18px;font-weight:700;margin-bottom:6px">欢迎使用人格探索</div>' +
+            '<div style="font-size:14px">为每个人创建一个独立档案<br>测试记录互不干扰，刷新关闭都不丢失</div></div>';
+        return '<div class="topbar"><div class="title">人格探索</div></div>' +
+          '<div class="card" style="background:var(--primary-soft);border:none"><div style="font-size:14px">通过科学的性格测评，了解自己的特质，获得自我认知与个人发展建议。</div></div>' +
+          body +
+          '<button class="btn btn-primary btn-block btn-lg" id="btn-new-profile" style="margin-top:4px">新建档案</button>' +
+          '<p class="privacy-note">数据仅存本机 · 无联网 · 无账号</p>';
+      });
+    },
+    bind: function () {
+      var btn = document.getElementById('btn-new-profile');
+      if (btn) btn.addEventListener('click', function () {
+        App.promptModal({ title: '新建档案', placeholder: '输入一个名字（如：小明）', okText: '创建' }).then(function (name) {
+          if (name === null) return;
+          AppState.store.createProfile(name).then(function (r) {
+            if (!r.ok) { App.toast(r.error); return; }
+            App.selectProfile(r.profile.id);
+          });
+        });
+      });
+      document.querySelectorAll('[data-profile]').forEach(function (el) {
+        var pid = Number(el.getAttribute('data-profile'));
+        el.addEventListener('click', function () { App.selectProfile(pid); });
+        el.addEventListener('keydown', function (e) { if (e.key === 'Enter') App.selectProfile(pid); });
+      });
+    }
+  };
+
+  VIEWS.profile = {
+    html: function () {
+      var pid = AppState.profileId;
+      if (!pid) { App.go('#/'); return Promise.resolve(''); }
+      return AppState.store.getProfile(pid).then(function (p) {
+        if (!p) { AppState.profileId = null; App.go('#/'); return ''; }
+        return AppCore.buildScaleCards(pid, AppState.store).then(function (cards) {
+          return AppCore.buildProfileHomeData(p, AppState.store).then(function (home) {
+            var scaleCards = cards.map(function (c) {
+              var s = c.scale;
+              var tag, action;
+              if (c.state === 'draft') {
+                tag = '<span class="tag tag-warn">未完成</span>';
+                action = '<button class="btn btn-primary" data-nav="quiz" data-scale="' + s.id + '">继续测试</button>';
+              } else if (c.state === 'done') {
+                tag = '<span class="tag tag-done">已测 ' + c.attemptsCount + ' 次</span>';
+                action = '<button class="btn btn-primary" data-nav="scale" data-scale="' + s.id + '">再测一次</button>';
+              } else {
+                tag = '<span class="tag tag-new">未测</span>';
+                action = '<button class="btn btn-primary" data-nav="scale" data-scale="' + s.id + '">开始测试</button>';
+              }
+              return '<div class="card scale-card"><div class="scale-head"><h3>' + AppCore.utils.esc(s.name) + '</h3>' + tag + '</div>' +
+                '<div class="scale-intro">' + AppCore.utils.esc(s.intro) + '</div>' +
+                '<div class="scale-meta">' + s.items.length + ' 题 · 约 ' + s.minutes + ' 分钟</div>' +
+                '<div class="scale-actions">' + action + '</div></div>';
+            }).join('');
+            var lastHtml = home.lastReport ? (function () {
+              var sc = AppCore.catalog.get(home.lastReport.scaleId);
+              return '<div class="card"><div class="card-title">最近报告</div>' +
+                '<div class="profile-card" style="padding:0"><div class="info"><div class="name">' + AppCore.utils.esc(sc ? sc.name : home.lastReport.scaleId) + '</div>' +
+                '<div class="meta">' + AppCore.utils.formatTime(home.lastReport.completedAt) + ' · 第 ' + home.lastSeq + ' 次</div></div>' +
+                '<button class="btn btn-ghost" data-nav="report" data-attempt="' + home.lastReport.id + '">查看</button></div></div>';
+            })() : '';
+            return '<div class="topbar"><button class="btn btn-ghost" id="btn-back-home">档案</button>' +
+              '<div class="title">' + AppCore.utils.esc(p.name) + '</div>' +
+              '<div class="topbar-actions"><button class="btn btn-ghost" id="btn-settings">设置</button></div></div>' +
+              '<div class="card"><div class="card-title">测试中心</div><div class="card-sub">选择一项测评，开始了解自己</div>' + scaleCards + '</div>' +
+              lastHtml +
+              '<button class="btn btn-block btn-ghost" id="btn-history">查看全部历史</button>' +
+              '<div class="card"><div class="card-title">档案管理</div><div class="scale-actions">' +
+              '<button class="btn btn-ghost" id="btn-rename">重命名</button>' +
+              '<button class="btn btn-danger" id="btn-delete">删除档案</button>' +
+              '</div></div>' +
+              '<p class="privacy-note">所有数据仅保存在这台电脑的浏览器中</p>';
+          });
+        });
+      });
+    },
+    bind: function () {
+      var pid = AppState.profileId;
+      var btnBack = document.getElementById('btn-back-home');
+      if (btnBack) btnBack.addEventListener('click', function () { location.hash = '#/'; });
+      var btnSettings = document.getElementById('btn-settings');
+      if (btnSettings) btnSettings.addEventListener('click', function () { location.hash = '#/settings'; });
+      var btnHistory = document.getElementById('btn-history');
+      if (btnHistory) btnHistory.addEventListener('click', function () { location.hash = '#/history'; });
+      document.querySelectorAll('[data-nav]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var nav = el.getAttribute('data-nav');
+          var scale = el.getAttribute('data-scale');
+          var attempt = el.getAttribute('data-attempt');
+          if (nav === 'scale' && scale) App.go('#/scale/' + scale);
+          else if (nav === 'quiz' && scale) App.go('#/quiz/' + scale);
+          else if (nav === 'report' && attempt) App.go('#/report/' + attempt);
+        });
+      });
+      var btnRename = document.getElementById('btn-rename');
+      if (btnRename) btnRename.addEventListener('click', function () {
+        App.promptModal({ title: '重命名档案', placeholder: '输入新名字', okText: '保存' }).then(function (name) {
+          if (name === null) return;
+          AppState.store.renameProfile(pid, name).then(function (r) {
+            if (!r.ok) { App.toast(r.error); return; }
+            App.toast('已重命名');
+            App.render();
+          });
+        });
+      });
+      var btnDelete = document.getElementById('btn-delete');
+      if (btnDelete) btnDelete.addEventListener('click', function () {
+        AppState.store.countAttemptsOfProfile(pid).then(function (n) {
+          return App.confirmModal({
+            title: '删除档案',
+            text: '将删除「' + (document.querySelector('.topbar .title') || {}).textContent + '」及其全部 ' + n + ' 份测试记录，此操作不可恢复。',
+            confirmText: '确认删除',
+            danger: true
+          }).then(function (ok) {
+            if (!ok) return;
+            return AppState.store.deleteProfile(pid).then(function () {
+              AppState.profileId = null;
+              try { localStorage.removeItem('pe_lastProfile'); } catch (e) { /* 忽略 */ }
+              location.hash = '#/';
+              App.toast('档案已删除');
+            });
+          });
+        });
+      });
+    }
+  };
+  VIEWS.scale = {
+    html: function (route) {
+      var scale = AppCore.catalog.get(route.params.scaleId);
+      var pid = AppState.profileId;
+      if (!scale || !pid) { App.go('#/profile'); return Promise.resolve(''); }
+      return AppState.store.getProfile(pid).then(function (p) {
+        if (!p) { AppState.profileId = null; App.go('#/'); return ''; }
+        return AppState.store.findDraft(pid, scale.id).then(function (draft) {
+          return AppCore.buildScaleCards(pid, AppState.store).then(function (cards) {
+            var card = cards.find(function (c) { return c.scale.id === scale.id; });
+            var last = card && card.lastCompleted;
+            var lastHtml = '';
+            if (last) {
+              lastHtml = '<div class="card"><div class="card-title">上次测试</div>' +
+                '<div class="profile-card" style="padding:0"><div class="info"><div class="meta">' + AppCore.utils.formatTime(last.completedAt) + ' · 第 ' + card.attemptsCount + ' 次</div></div>' +
+                '<button class="btn btn-ghost" data-nav="report" data-attempt="' + last.id + '">查看上次报告</button></div></div>';
+            }
+            var draftTip = draft ? '<div class="card-sub">你有一份未完成的测试，将从上次停下的地方继续。</div>' : '';
+            return '<div class="topbar"><button class="btn btn-ghost" id="btn-scale-back">返回</button><div class="title">' + AppCore.utils.esc(scale.name) + '</div><div class="topbar-actions"></div></div>' +
+              '<div class="card"><h2 style="margin:0 0 8px">' + AppCore.utils.esc(scale.name) + '</h2>' +
+              '<div class="scale-intro">' + AppCore.utils.esc(scale.intro) + '</div>' +
+              '<div class="scale-meta">' + scale.items.length + ' 题 · 约 ' + scale.minutes + ' 分钟 · 5 点同意度量表</div>' +
+              draftTip +
+              '<button class="btn btn-primary btn-lg btn-block" id="btn-start">' + (draft ? '继续上次测试' : '开始测试') + '</button></div>' +
+              lastHtml +
+              '<p class="privacy-note">测试结果仅用于自我了解参考，不构成心理诊断</p>';
+          });
+        });
+      });
+    },
+    bind: function (route) {
+      var btnBack = document.getElementById('btn-scale-back');
+      if (btnBack) btnBack.addEventListener('click', function () { App.go('#/profile'); });
+      var btnStart = document.getElementById('btn-start');
+      if (btnStart) btnStart.addEventListener('click', function () { App.go('#/quiz/' + route.params.scaleId); });
+      document.querySelectorAll('[data-nav="report"]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          App.go('#/report/' + el.getAttribute('data-attempt'));
+        });
+      });
+    }
+  };
+
+  function quizBodyHtml(scale, st) {
+    var item = scale.items[st.index];
+    var labels = { 1: '非常不同意', 2: '不同意', 3: '中立', 4: '同意', 5: '非常同意' };
+    var opts = [1, 2, 3, 4, 5].map(function (v) {
+      var sel = st.currentValue === v ? ' selected' : '';
+      return '<button class="option' + sel + '" data-val="' + v + '"><span style="font-weight:800;margin-right:8px;display:inline-block;min-width:20px">' + v + '</span>' + labels[v] + '</button>';
+    }).join('');
+    var pct = st.total ? Math.round((st.answeredCount / st.total) * 100) : 0;
+    var dim = scale.dimensions.filter(function (d) { return d.id === item.d; })[0];
+    var dimName = dim ? dim.name : '';
+    var isLast = st.index === st.total - 1;
+    var nextBtn = isLast
+      ? '<button class="btn btn-primary" id="btn-finish"' + (st.isAnswered ? '' : ' disabled') + '>完成并查看结果</button>'
+      : '<button class="btn btn-primary" id="btn-next"' + (st.isAnswered ? '' : ' disabled') + '>下一题</button>';
+    var prevBtn = '<button class="btn btn-ghost" id="btn-prev"' + (st.index > 0 ? '' : ' disabled') + '>上一题</button>';
+    return '<div class="quiz-wrap">' +
+      '<div class="quiz-progress-text">已完成 ' + st.answeredCount + '/' + st.total + ' 题（' + pct + '%）</div>' +
+      '<div class="progress"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="quiz-dim-label">' + AppCore.utils.esc(dimName) + ' · 第 ' + (st.index + 1) + ' 题</div>' +
+      '<div class="quiz-question">' + AppCore.utils.esc(item.text) + '</div>' +
+      opts +
+      '<div class="quiz-nav">' + prevBtn + nextBtn + '</div></div>';
+  }
+
+  function bindQuizBody(ctx) {
+    var opts = document.querySelectorAll('#quiz-body .option');
+    opts.forEach(function (el) {
+      el.addEventListener('click', function () {
+        var v = Number(el.getAttribute('data-val'));
+        AppState.store.saveAnswer(ctx.attemptId, ctx.index, v).then(function (r) {
+          if (!r.ok) { App.toast(r.error); return; }
+          renderQuizBody();
+        });
+      });
+    });
+    var prev = document.getElementById('btn-prev');
+    if (prev) prev.addEventListener('click', function () {
+      if (ctx.index > 0) { ctx.index -= 1; renderQuizBody(); }
+    });
+    var next = document.getElementById('btn-next');
+    if (next) next.addEventListener('click', function () {
+      if (ctx.index < ctx.total - 1) { ctx.index += 1; renderQuizBody(); }
+    });
+    var fin = document.getElementById('btn-finish');
+    if (fin) fin.addEventListener('click', function () {
+      AppState.store.getAttempt(ctx.attemptId).then(function (a) {
+        var scale = AppCore.catalog.get(a.scaleId);
+        var st = AppCore.quizState(a, scale);
+        if (!st.allAnswered) { App.toast('还有题目未作答'); return; }
+        var result = AppCore.computeScores(scale, a.answers);
+        result.answeredCount = a.answers.length;
+        AppState.store.completeAttempt(a.id, result).then(function (r) {
+          if (!r.ok) { App.toast(r.error); return; }
+          AppState.quizCtx = null;
+          App.go('#/report/' + a.id);
+        });
+      });
+    });
+  }
+
+  function renderQuizBody() {
+    var ctx = AppState.quizCtx;
+    if (!ctx) return;
+    var scale = AppCore.catalog.get(ctx.scaleId);
+    AppState.store.getAttempt(ctx.attemptId).then(function (a) {
+      var st = AppCore.quizState(a, scale);
+      ctx.index = st.index;
+      ctx.total = st.total;
+      var body = document.getElementById('quiz-body');
+      if (body) {
+        body.innerHTML = quizBodyHtml(scale, st);
+        bindQuizBody(ctx);
+      }
+    });
+  }
+
+  VIEWS.quiz = {
+    html: function (route) {
+      var scale = AppCore.catalog.get(route.params.scaleId);
+      var pid = AppState.profileId;
+      if (!scale || !pid) { App.go('#/profile'); return Promise.resolve(''); }
+      return AppState.store.findDraft(pid, scale.id).then(function (d) {
+        if (d) return d;
+        return AppState.store.createAttempt(pid, scale.id).then(function (r) {
+          if (!r.ok) { App.go('#/profile'); return null; }
+          return r.attempt;
+        });
+      }).then(function (a) {
+        if (!a) return '';
+        var st = AppCore.quizState(a, scale);
+        AppState.quizCtx = { attemptId: a.id, scaleId: scale.id, index: st.index, total: st.total };
+        return '<div class="topbar"><button class="btn btn-ghost" id="btn-quiz-back">退出</button>' +
+          '<div class="title">' + AppCore.utils.esc(scale.name) + '</div>' +
+          '<div class="topbar-actions"><span class="tag">' + (st.index + 1) + '/' + st.total + '</span></div></div>' +
+          '<div id="quiz-body">' + quizBodyHtml(scale, st) + '</div>' +
+          '<p class="privacy-note">作答即时保存，可随时退出，下次继续</p>';
+      });
+    },
+    bind: function () {
+      var btnBack = document.getElementById('btn-quiz-back');
+      if (btnBack) btnBack.addEventListener('click', function () { AppState.quizCtx = null; App.go('#/profile'); });
+      bindQuizBody(AppState.quizCtx);
+    }
+  };
+  // 雷达图（Canvas 自绘，支持多系列用于对比）
+  App.drawRadar = function (canvas, series, labels) {
+    var n = labels.length;
+    if (n < 3 || series.length === 0) return;
+    var dpr = window.devicePixelRatio || 1;
+    var size = Math.min(canvas.width, 380);
+    var cx = size / 2, cy = size / 2, R = size * 0.34;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, size, size);
+    function pt(i, r) {
+      var ang = -Math.PI / 2 + (2 * Math.PI * i) / n;
+      return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+    }
+    // 网格（25/50/75/100）
+    [0.25, 0.5, 0.75, 1].forEach(function (f) {
+      ctx.beginPath();
+      for (var i = 0; i <= n; i++) {
+        var p = pt(i % n, R * f);
+        if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+      }
+      ctx.strokeStyle = '#e4e0d8';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+    // 轴线
+    for (var i = 0; i < n; i++) {
+      var p = pt(i, R);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(p[0], p[1]);
+      ctx.strokeStyle = '#e4e0d8';
+      ctx.stroke();
+    }
+    // 数据系列
+    series.forEach(function (s) {
+      ctx.beginPath();
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var v = Math.max(0, Math.min(100, s.data[i]));
+        var p = pt(i, R * v / 100);
+        pts.push(p);
+        if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+      }
+      ctx.closePath();
+      ctx.fillStyle = s.fill || 'rgba(95,143,122,.25)';
+      ctx.fill();
+      ctx.strokeStyle = s.color || '#5f8f7a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // 顶点标记
+      if (series.length > 1) {
+        ctx.fillStyle = s.color;
+        pts.forEach(function (p) {
+          ctx.beginPath();
+          ctx.arc(p[0], p[1], 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    });
+    // 维度标签
+    ctx.fillStyle = '#33302b';
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    labels.forEach(function (l, i) {
+      var p = pt(i, R * 1.2);
+      ctx.fillText(l.name, p[0], p[1]);
+    });
+    // 单系列时标注数值
+    if (series.length === 1) {
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = '#4a7462';
+      series[0].data.forEach(function (v, i) {
+        var p = pt(i, R * 0.78);
+        ctx.fillText(v, p[0], p[1]);
+      });
+    }
+  };
+
+  // ===== 导出工具 =====
+  App.downloadBlob = function (blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 400);
+  };
+
+  // 报告导出 PNG：绘制简化报告图（标题 + 雷达图/得分条 + 维度得分 + 免责）
+  App.exportReportPng = function (attempt, scale, data, profileName) {
+    var W = 640;
+    var H = scale.scaleType === 'multi' ? 860 : 720;
+    var c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#f6f4ef';
+    ctx.fillRect(0, 0, W, H);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#33302b';
+    ctx.font = 'bold 26px "Microsoft YaHei",sans-serif';
+    ctx.fillText(scale.name + '人格报告', W / 2, 56);
+    ctx.font = '14px "Microsoft YaHei",sans-serif';
+    ctx.fillStyle = '#8a857d';
+    ctx.fillText(profileName + ' · ' + AppCore.utils.formatTime(attempt.completedAt), W / 2, 84);
+    if (scale.scaleType === 'multi') {
+      var rc = document.createElement('canvas');
+      rc.width = 380; rc.height = 380;
+      App.drawRadar(rc, [{ data: data.radarData.map(function (d) { return d.value; }), color: '#5f8f7a', fill: 'rgba(95,143,122,.25)' }], data.radarData);
+      ctx.drawImage(rc, (W - 380) / 2, 110, 380, 380);
+    } else {
+      ctx.textAlign = 'left';
+      var y = 150;
+      data.dims.forEach(function (d) {
+        ctx.font = '600 16px "Microsoft YaHei",sans-serif';
+        ctx.fillStyle = '#33302b';
+        ctx.fillText(d.name, 90, y);
+        ctx.fillStyle = '#eeeae1';
+        ctx.fillRect(200, y - 12, 340, 14);
+        ctx.fillStyle = '#5f8f7a';
+        ctx.fillRect(200, y - 12, 340 * d.pct / 100, 14);
+        ctx.font = '700 16px "Microsoft YaHei",sans-serif';
+        ctx.fillStyle = '#4a7462';
+        ctx.textAlign = 'right';
+        ctx.fillText(d.pct + ' 分', 560, y);
+        ctx.textAlign = 'left';
+        y += 48;
+      });
+    }
+    // 维度得分表（multi 时补列）
+    if (scale.scaleType === 'multi') {
+      ctx.textAlign = 'left';
+      var yy = 540;
+      ctx.font = '600 16px "Microsoft YaHei",sans-serif';
+      ctx.fillStyle = '#33302b';
+      data.dims.forEach(function (d) {
+        ctx.fillText(d.name + '：' + d.pct + ' 分', 90, yy);
+        yy += 30;
+      });
+      ctx.font = '13px "Microsoft YaHei",sans-serif';
+      ctx.fillStyle = '#8a857d';
+      ctx.fillText('人格探索 · 数据仅存本机 · 仅用于自我了解参考，不构成心理诊断', W / 2, H - 24);
+    } else {
+      ctx.textAlign = 'center';
+      ctx.font = '13px "Microsoft YaHei",sans-serif';
+      ctx.fillStyle = '#8a857d';
+      ctx.fillText('人格探索 · 数据仅存本机 · 仅用于自我了解参考，不构成心理诊断', W / 2, H - 24);
+    }
+    var url = c.toDataURL('image/png');
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = scale.name + '-报告-' + AppCore.utils.formatDate(attempt.completedAt) + '.png';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { document.body.removeChild(a); }, 400);
+    return Promise.resolve(true);
+  };
+
+  // 报告导出独立 HTML
+  App.exportReportHtml = function (attempt, scale, data, profileName, seq) {
+    var html = AppCore.buildHtmlReport({
+      scale: scale,
+      data: data,
+      profileName: profileName,
+      timeText: AppCore.utils.formatTime(attempt.completedAt),
+      seqText: '第 ' + seq + ' 次测试'
+    });
+    App.downloadBlob(new Blob([html], { type: 'text/html;charset=utf-8' }), scale.name + '-报告-' + AppCore.utils.formatDate(attempt.completedAt) + '.html');
+    return Promise.resolve(true);
+  };
+
+  VIEWS.report = {
+    html: function (route) {
+      var aid = route.params.attemptId;
+      if (!aid || !AppState.store) { App.go('#/profile'); return Promise.resolve(''); }
+      return AppState.store.getAttempt(aid).then(function (a) {
+        if (!a || !a.result) { App.go('#/profile'); return ''; }
+        var scale = AppCore.catalog.get(a.scaleId);
+        if (!scale) { App.go('#/profile'); return ''; }
+        var data = AppCore.buildReportData(scale, a.result);
+        return Promise.all([
+          AppState.store.getProfile(a.profileId),
+          AppCore.attemptSeq(AppState.store, a)
+        ]).then(function (r) {
+          var p = r[0], seq = r[1];
+          var radarHtml = scale.scaleType === 'multi'
+            ? '<div class="radar-wrap"><canvas id="radar" width="380" height="380"></canvas></div>' : '';
+          var dimHtml = data.dims.map(function (d) {
+            return '<div class="dim-card"><div class="dim-head"><span class="dim-name">' + AppCore.utils.esc(d.name) + '</span>' +
+              '<span class="dim-score">' + d.pct + ' 分</span></div>' +
+              '<div class="dim-bar"><span style="width:' + d.pct + '%"></span></div>' +
+              '<div class="dim-desc">' + AppCore.utils.esc(d.text) + '</div>' +
+              (d.advice.length ? '<ul class="advice-list">' + d.advice.map(function (x) { return '<li>' + AppCore.utils.esc(x) + '</li>'; }).join('') + '</ul>' : '') +
+              '</div>';
+          }).join('');
+          return '<div class="topbar"><button class="btn btn-ghost" id="btn-report-back">返回</button>' +
+            '<div class="title">' + AppCore.utils.esc(scale.name) + '报告</div><div class="topbar-actions"></div></div>' +
+            '<div class="report-head"><h2>' + AppCore.utils.esc(scale.name) + '</h2>' +
+            '<div class="meta">' + AppCore.utils.esc(p ? p.name : '') + ' · ' + AppCore.utils.formatTime(a.completedAt) + ' · 第 ' + seq + ' 次测试</div></div>' +
+            radarHtml +
+            dimHtml +
+            '<div class="card"><div class="card-title">综合小结</div><div class="summary-box">' + AppCore.utils.esc(data.summary) + '</div></div>' +
+            '<div class="card"><div class="card-title">操作</div><div class="scale-actions">' +
+            '<button class="btn btn-primary" data-nav="scale" data-scale="' + scale.id + '">再测一次</button>' +
+            '<button class="btn btn-ghost" id="btn-export-png">导出 PNG</button>' +
+            '<button class="btn btn-ghost" id="btn-export-html">导出 HTML</button>' +
+            '<button class="btn btn-ghost" id="btn-report-home">返回档案</button></div></div>' +
+            '<p class="privacy-note">本报告基于你的作答生成，仅用于自我了解参考，不构成心理诊断</p>';
+        });
+      });
+    },
+    bind: function (route) {
+      var aid = route.params.attemptId;
+      var canvas = document.getElementById('radar');
+      if (canvas && aid) {
+        AppState.store.getAttempt(aid).then(function (a) {
+          if (!a || !a.result) return;
+          var scale = AppCore.catalog.get(a.scaleId);
+          var data = AppCore.buildReportData(scale, a.result);
+          App.drawRadar(canvas, [{ data: data.radarData.map(function (d) { return d.value; }), color: '#5f8f7a', fill: 'rgba(95,143,122,.25)' }], data.radarData);
+        });
+      }
+      var btnBack = document.getElementById('btn-report-back');
+      if (btnBack) btnBack.addEventListener('click', function () { App.go('#/profile'); });
+      var btnHome = document.getElementById('btn-report-home');
+      if (btnHome) btnHome.addEventListener('click', function () { App.go('#/profile'); });
+      var btnPng = document.getElementById('btn-export-png');
+      var btnHtml = document.getElementById('btn-export-html');
+      if (btnPng || btnHtml) {
+        AppState.store.getAttempt(aid).then(function (a) {
+          if (!a || !a.result) return;
+          var scale = AppCore.catalog.get(a.scaleId);
+          var data = AppCore.buildReportData(scale, a.result);
+          return Promise.all([AppState.store.getProfile(a.profileId), AppCore.attemptSeq(AppState.store, a)]).then(function (r) {
+            var pname = r[0] ? r[0].name : '', seq = r[1];
+            if (btnPng) btnPng.addEventListener('click', function () {
+              App.exportReportPng(a, scale, data, pname).then(function () { App.toast('已导出 PNG 图片'); });
+            });
+            if (btnHtml) btnHtml.addEventListener('click', function () {
+              App.exportReportHtml(a, scale, data, pname, seq).then(function () { App.toast('已导出 HTML 报告'); });
+            });
+          });
+        });
+      }
+      document.querySelectorAll('[data-nav="scale"]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          App.go('#/scale/' + el.getAttribute('data-scale'));
+        });
+      });
+    }
+  };
+  function renderCompare(comp) {
+    var html = '<div class="card"><div class="card-title">对比 · ' + AppCore.utils.esc(comp.scale.name) + '</div>';
+    var multi = comp.dims.length >= 3;
+    if (multi) html += '<div class="radar-wrap"><canvas id="cmp-radar" width="380" height="380"></canvas></div>';
+    html += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin:8px 0">' + comp.series.map(function (s) {
+      return '<span style="font-size:13px;display:inline-flex;align-items:center"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + s.color + ';margin-right:5px"></span>' + AppCore.utils.esc(s.label) + '</span>';
+    }).join('') + '</div>';
+    if (!multi) {
+      comp.series.forEach(function (s) {
+        html += '<div class="card-sub" style="margin-top:10px">' + AppCore.utils.esc(s.label) + '：' + s.data[0] + ' 分</div>' +
+          '<div class="dim-bar"><span style="width:' + s.data[0] + '%;background:' + s.color + '"></span></div>';
+      });
+    }
+    if (comp.deltas.length) {
+      html += '<div class="card-sub" style="margin-top:10px">与上一次相比（最新 − 上次）：</div>';
+      comp.deltas.forEach(function (d) {
+        var cls = d.dir === 'up' ? 'delta-up' : (d.dir === 'down' ? 'delta-down' : 'delta-flat');
+        var mark = d.dir === 'up' ? '↑ ' + d.diff : (d.dir === 'down' ? '↓ ' + Math.abs(d.diff) : '— 持平');
+        html += '<div class="profile-card" style="padding:7px 0;border-bottom:1px solid var(--line)"><div class="info"><span style="font-weight:600;font-size:14px">' + AppCore.utils.esc(d.name) + '</span></div>' +
+          '<div class="meta">' + d.value + ' 分 <span class="' + cls + '">' + mark + '</span></div></div>';
+      });
+    }
+    html += '</div>';
+    var area = document.getElementById('compare-area');
+    if (area) area.innerHTML = html;
+    if (multi) {
+      var c = document.getElementById('cmp-radar');
+      if (c) App.drawRadar(c, comp.series.map(function (s) {
+        return { data: s.data, color: s.color, fill: 'rgba(0,0,0,0)' };
+      }), comp.dims.map(function (n) { return { name: n }; }));
+    }
+  }
+
+  VIEWS.history = {
+    html: function () {
+      var pid = AppState.profileId;
+      if (!pid) { App.go('#/'); return Promise.resolve(''); }
+      return AppCore.historyListData(pid, AppState.store).then(function (rows) {
+        if (!rows.length) {
+          return '<div class="topbar"><button class="btn btn-ghost" id="btn-history-back">返回</button><div class="title">历史记录</div><div class="topbar-actions"></div></div>' +
+            '<div class="empty">还没有测试记录<br>完成一次测试后，历史会显示在这里</div>';
+        }
+        var items = rows.map(function (r) {
+          return '<div class="card history-item">' +
+            '<label style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer">' +
+            '<input type="checkbox" class="cmp-cb" data-attempt="' + r.attempt.id + '" data-scale="' + r.attempt.scaleId + '">' +
+            '<div class="info" style="min-width:0"><div class="name">' + AppCore.utils.esc(r.scale ? r.scale.name : r.attempt.scaleId) + '</div>' +
+            '<div class="meta">' + AppCore.utils.formatTime(r.attempt.completedAt) + ' · 第 ' + r.seq + ' 次</div></div></label>' +
+            '<button class="btn btn-ghost" data-nav="report" data-attempt="' + r.attempt.id + '">查看</button></div>';
+        }).join('');
+        return '<div class="topbar"><button class="btn btn-ghost" id="btn-history-back">返回</button><div class="title">历史记录</div><div class="topbar-actions"></div></div>' +
+          '<div class="card"><div class="card-title">全部历史</div><div class="card-sub">勾选 2 份或以上同一量表的报告，可对比变化</div>' +
+          items + '</div>' +
+          '<button class="btn btn-primary btn-block" id="btn-compare" disabled>对比所选</button>' +
+          '<div id="compare-area"></div>' +
+          '<p class="privacy-note">所有数据仅保存在这台电脑的浏览器中</p>';
+      });
+    },
+    bind: function () {
+      var btnBack = document.getElementById('btn-history-back');
+      if (btnBack) btnBack.addEventListener('click', function () { App.go('#/profile'); });
+      document.querySelectorAll('[data-nav="report"]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          App.go('#/report/' + el.getAttribute('data-attempt'));
+        });
+      });
+      var cmpBtn = document.getElementById('btn-compare');
+      var selection = {};
+      function refreshCompareBtn() {
+        if (!cmpBtn) return;
+        var ids = Object.keys(selection);
+        var scales = {};
+        ids.forEach(function (id) { scales[selection[id]] = true; });
+        var ok = ids.length >= 2 && Object.keys(scales).length === 1;
+        cmpBtn.disabled = !ok;
+      }
+      document.querySelectorAll('.cmp-cb').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var id = Number(cb.getAttribute('data-attempt'));
+          var scale = cb.getAttribute('data-scale');
+          if (cb.checked) selection[id] = scale; else delete selection[id];
+          refreshCompareBtn();
+        });
+      });
+      if (cmpBtn) cmpBtn.addEventListener('click', function () {
+        var ids = Object.keys(selection).map(Number);
+        if (ids.length < 2) { App.toast('请至少勾选 2 份报告'); return; }
+        var scales = {};
+        ids.forEach(function (id) { scales[selection[id]] = true; });
+        if (Object.keys(scales).length !== 1) { App.toast('请选择同一量表的报告进行对比'); return; }
+        AppState.store.getAttempt(ids[0]).then(function (firstA) {
+          var scaleId = firstA.scaleId;
+          var tasks = ids.map(function (id) { return AppState.store.getAttempt(id); });
+          return Promise.all(tasks).then(function (attempts) {
+            attempts = attempts.filter(function (a) { return a && a.scaleId === scaleId && a.status === 'completed'; });
+            if (attempts.length < 2) { App.toast('所选报告不完整'); return; }
+            return AppCore.buildCompareData(attempts, AppState.store).then(function (comp) {
+              renderCompare(comp);
+              var area = document.getElementById('compare-area');
+              if (area) area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+          });
+        });
+      });
+    }
+  };
+  VIEWS.settings = {
+    html: function () {
+      var pid = AppState.profileId;
+      var namePromise = pid ? AppState.store.getProfile(pid).then(function (p) { return p ? p.name : ''; }) : Promise.resolve('');
+      return namePromise.then(function (pname) {
+        return '<div class="topbar"><button class="btn btn-ghost" id="btn-settings-back">返回</button><div class="title">设置</div><div class="topbar-actions"></div></div>' +
+          '<div class="card"><div class="card-title">隐私说明</div>' +
+          '<div style="font-size:14px">所有测试数据（档案、作答、报告）只保存在<b>这台电脑的浏览器</b>中：不联网、不上传、无账号、无追踪。关闭浏览器或重启电脑，数据仍然保留。删除档案或清除数据后不可恢复，操作前请确认。</div></div>' +
+          '<div class="card"><div class="card-title">数据管理</div><div class="card-sub">当前档案：' + AppCore.utils.esc(pname || '（无）') + '</div><div class="scale-actions">' +
+          '<button class="btn btn-primary" id="btn-export-all">导出全部数据（JSON）</button>' +
+          '<button class="btn btn-danger" id="btn-delete-profile">删除当前档案</button>' +
+          '<button class="btn btn-danger" id="btn-clear-all">清除全部数据</button>' +
+          '</div></div>' +
+          '<div class="card"><div class="card-title">关于</div><div style="font-size:14px">' +
+          '<p style="margin:4px 0">版本：1.0（本地单文件应用）</p>' +
+          '<p style="margin:4px 0">量表来源：大五人格采用 IPIP（国际人格项目库）公共条目；心理韧性参考 Brief Resilience Scale（BRS，Smith et al., 2008）公开条目；核心自我评价参考 Core Self-Evaluations Scale（CSES，Judge et al., 2003）公开条目，均为中文化表述。</p>' +
+          '<p style="margin:4px 0">结果仅用于自我了解与个人发展参考，不构成心理诊断。</p></div></div>';
+      });
+    },
+    bind: function () {
+      var btnBack = document.getElementById('btn-settings-back');
+      if (btnBack) btnBack.addEventListener('click', function () { App.go('#/profile'); });
+      var btnExport = document.getElementById('btn-export-all');
+      if (btnExport) btnExport.addEventListener('click', function () {
+        AppState.store.exportAll().then(function (data) {
+          App.downloadBlob(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' }), '人格探索-全部数据备份-' + AppCore.utils.formatDate(AppCore.utils.now()) + '.json');
+          App.toast('已导出全部数据备份');
+        });
+      });
+      var btnDelProfile = document.getElementById('btn-delete-profile');
+      if (btnDelProfile) btnDelProfile.addEventListener('click', function () {
+        var pid = AppState.profileId;
+        if (!pid) { App.toast('当前没有档案'); return; }
+        AppState.store.getProfile(pid).then(function (p) {
+          return AppState.store.countAttemptsOfProfile(pid).then(function (n) {
+            return App.confirmModal({
+              title: '删除当前档案',
+              text: '将删除档案「' + (p ? p.name : '') + '」及其全部 ' + n + ' 份测试记录，此操作不可恢复。',
+              confirmText: '确认删除',
+              danger: true
+            }).then(function (ok) {
+              if (!ok) return;
+              return AppState.store.deleteProfile(pid).then(function () {
+                AppState.profileId = null;
+                try { localStorage.removeItem('pe_lastProfile'); } catch (e) { /* 忽略 */ }
+                location.hash = '#/';
+                App.toast('档案已删除');
+              });
+            });
+          });
+        });
+      });
+      var btnClear = document.getElementById('btn-clear-all');
+      if (btnClear) btnClear.addEventListener('click', function () {
+        App.confirmModal({
+          title: '清除全部数据',
+          text: '将删除本机保存的所有档案与测试记录，此操作不可恢复。建议先导出备份。',
+          confirmText: '确认清除',
+          danger: true
+        }).then(function (ok) {
+          if (!ok) return;
+          AppState.store.clearAll().then(function () {
+            AppState.profileId = null;
+            try { localStorage.removeItem('pe_lastProfile'); } catch (e) { /* 忽略 */ }
+            location.hash = '#/';
+            App.toast('已清除全部数据');
+          });
+        });
+      });
+    }
+  };
+  VIEWS.test = {
+    html: function () { return Promise.resolve('<div class="empty">自测模式（开发中）</div>'); },
+    bind: function () {}
+  };
+
+  /* ========== 路由渲染 ========== */
+  App.render = function () {
+    var route = AppCore.router.parse(location.hash);
+    var v = VIEWS[route.name] || VIEWS.home;
+    return Promise.resolve(v.html(route)).then(function (html) {
+      var app = document.getElementById('app');
+      if (app) app.innerHTML = html;
+      window.scrollTo(0, 0);
+      try { v.bind(route); } catch (e) { /* 绑定失败不阻断展示 */ }
+    });
+  };
+
+  /* ========== 初始化 ========== */
+  App.init = function () {
+    function bootWith(adapter, mode) {
+      var store = AppCore.createStore(adapter);
+      return store.ready().then(function () {
+        AppState.store = store;
+        AppState.storageMode = mode;
+        // 恢复上次使用的档案
+        try { AppState.profileId = Number(localStorage.getItem('pe_lastProfile')) || null; } catch (e) { AppState.profileId = null; }
+        if (AppState.profileId) {
+          return store.getProfile(AppState.profileId).then(function (p) {
+            if (!p) AppState.profileId = null;
+          });
+        }
+        return null;
+      });
+    }
+    var idb = null;
+    if (window.indexedDB) {
+      try { idb = App.createIndexedDBAdapter(); } catch (e) { idb = null; }
+    }
+    var boot = idb ? bootWith(idb, 'indexeddb').catch(function () {
+      return bootWith(App.createLocalStorageAdapter(), 'localStorage');
+    }) : bootWith(App.createLocalStorageAdapter(), 'localStorage');
+
+    return boot.then(function () {
+      window.addEventListener('hashchange', App.render);
+      if (!location.hash) location.hash = '#/';
+      App.render();
+      return { store: AppState.store, storageMode: AppState.storageMode };
+    });
+  };
+
+  window.App = App;
+  window.AppState = AppState;
+
+  // 启动应用
+  App.init();
+})();
+
+</script>
+</body>
+</html>
